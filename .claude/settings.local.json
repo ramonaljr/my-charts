@@ -22,7 +22,9 @@
       "Bash(node test-api-call.js:*)",
       "Bash(node test-db.js:*)",
       "Bash(node test-statistics.js:*)",
-      "Bash(node test-statistics2.js:*)"
+      "Bash(node test-statistics2.js:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
