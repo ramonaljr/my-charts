@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run build:api:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm approve-builds:*)",
+      "Bash(pnpm build:core:*)",
+      "Bash(taskkill:*)",
+      "Bash(ping:*)",
+      "Bash(curl:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(dir:*)",
+      "Bash(pnpm build:api:*)",
+      "Bash(pnpm build:web:*)",
+      "Bash(node test-yahoo.js:*)",
+      "Bash(node test-api-call.js:*)",
+      "Bash(node test-db.js:*)",
+      "Bash(node test-statistics.js:*)",
+      "Bash(node test-statistics2.js:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

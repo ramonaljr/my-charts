@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum AssetClass {
+  FX
+  CRYPTO
+  STOCK
+}
+
+enum Timeframe {
+  MIN1
+  MIN5
+  MIN15
+  H1
+  H4
+  D1
+}
+
+enum ConditionType {
+  GT
+  LT
+  CROSS_ABOVE
+  CROSS_BELOW
+}
+
+model Symbol {
+  id            Int       @id @default(autoincrement())
+  displayName   String
+  assetClass    AssetClass
+  finnhubSymbol String
+  fmpSymbol     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  candles       Candle[]
+  alertRules    AlertRule[]
+  alertEvents   AlertEvent[]
+  fundamentalsIncome     FundamentalsIncome[]
+  fundamentalsBalance    FundamentalsBalance[]
+  fundamentalsCashflow   FundamentalsCashflow[]
+  fundamentalsRatios     FundamentalsRatios[]
+}
+
+model Candle {
+  id        Int       @id @default(autoincrement())
+  symbolId  Int
+  timeframe Timeframe
+  timestamp DateTime
+  open      Float
+  high      Float
+  low       Float
+  close     Float
+  volume    Float
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  Symbol Symbol @relation(fields: [symbolId], references: [id], onDelete: Cascade)
+
+  @@unique([symbolId, timeframe, timestamp])
+  @@index([symbolId, timeframe, timestamp])
+}
+
+model AlertRule {
+  id            String        @id @default(cuid())
+  symbolId      Int
+  timeframe     Timeframe
+  conditionType ConditionType
+  leftOperand   Json
+  rightOperand  Json
+  active        Boolean       @default(true)
+  description   String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  Symbol Symbol      @relation(fields: [symbolId], references: [id], onDelete: Cascade)
+  events AlertEvent[]
+
+  @@index([symbolId, timeframe])
+}
+
+model AlertEvent {
+  id            String        @id @default(cuid())
+  ruleId        String
+  symbolId      Int
+  timeframe     Timeframe
+  triggeredAt   DateTime
+  conditionType ConditionType
+  leftValue     Float
+  rightValue    Float
+  createdAt     DateTime      @default(now())
+
+  Rule   AlertRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  Symbol Symbol    @relation(fields: [symbolId], references: [id], onDelete: Cascade)
+
+  @@index([symbolId, timeframe, triggeredAt])
+}
+
+model FundamentalsIncome {
+  id         Int      @id @default(autoincrement())
+  symbolId   Int
+  fiscalDate DateTime
+  period     String
+  data       Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  Symbol Symbol @relation(fields: [symbolId], references: [id], onDelete: Cascade)
+
+  @@unique([symbolId, fiscalDate, period])
+  @@index([symbolId, fiscalDate])
+}
+
+model FundamentalsBalance {
+  id         Int      @id @default(autoincrement())
+  symbolId   Int
+  fiscalDate DateTime
+  period     String
+  data       Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  Symbol Symbol @relation(fields: [symbolId], references: [id], onDelete: Cascade)
+
+  @@unique([symbolId, fiscalDate, period])
+  @@index([symbolId, fiscalDate])
+}
+
+model FundamentalsCashflow {
+  id         Int      @id @default(autoincrement())
+  symbolId   Int
+  fiscalDate DateTime
+  period     String
+  data       Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  Symbol Symbol @relation(fields: [symbolId], references: [id], onDelete: Cascade)
+
+  @@unique([symbolId, fiscalDate, period])
+  @@index([symbolId, fiscalDate])
+}
+
+model FundamentalsRatios {
+  id         Int      @id @default(autoincrement())
+  symbolId   Int
+  fiscalDate DateTime
+  period     String
+  data       Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  Symbol Symbol @relation(fields: [symbolId], references: [id], onDelete: Cascade)
+
+  @@unique([symbolId, fiscalDate, period])
+  @@index([symbolId, fiscalDate])
+}
+
+model Layout {
+  id        Int      @id @default(1)
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
+model UserSettings {
+  id               Int       @id @default(1)
+  defaultSymbolId  Int?
+  defaultTimeframe Timeframe?
+  theme            String?   // "light" | "dark"
+  emailDestination String?
+  preferences      Json?
+  updatedAt        DateTime  @updatedAt
+}
